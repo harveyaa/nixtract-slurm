@@ -3,6 +3,7 @@ This project is in development, soon ready but not yet. TODO:
 - [ ] Write tests
   - [ ] find best time, memory, n_subs_per_job
   - [ ] test functionality
+- [ ] Set up continuous integration
 - [ ] Set up package entry points
 - [ ] Set up command line usage
 - [ ] Write documentation
@@ -16,10 +17,12 @@ This project is in development, soon ready but not yet. TODO:
 ## 2. Create a venv
 ### Make an empty directory for your venv:
 `mkdir ENV`
+
 Where `ENV` is the name of your environment.
 
 ### Create the venv:
 `virtualenv --no-download ~/ENV`
+
 ENV is name of empty directory containing environment.
 
 ### Activate it:
