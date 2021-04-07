@@ -1,0 +1,20 @@
+{
+    "input_files": ["/home/harveyaa/nixtract-slurm_aux/cobre/frmi_040000.nii.gz", "/home/harveyaa/nixtract-slurm_aux/cobre/fmri_040001.nii.gz", "/home/harveyaa/nixtract-slurm_aux/cobre/fmri_040002.nii.gz"],
+    "roi_file": "/home/harveyaa/projects/def-pbellec/ATLAS/MIST/Parcellations/MIST_64.nii.gz",
+    "mask_img": null,
+    "labels": [],
+    "regressor_files": ["/home/harveyaa/nixtract-slurm_aux/cobre/fmri_40000.tsv", "/home/harveyaa/nixtract-slurm_aux/cobre/fmri_40001.tsv", "/home/harveyaa/nixtract-slurm_aux/cobre/fmri_40002.tsv"],
+    "regressors": ["Params6"],
+    "as_voxels": false,
+    "sphere_size": null,
+    "allow_overlap": false,
+    "standardize": false,
+    "t_r": null,
+    "detrend": false,
+    "high_pass": null,
+    "low_pass": null,
+    "smoothing_fwhm": null,
+    "discard_scans": null,
+    "n_jobs": 1
+  }
+  
