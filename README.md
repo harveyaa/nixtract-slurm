@@ -1,3 +1,13 @@
+This project is in development, soon ready but not yet. TODO:
+- [ ] Incorporate nixtract-cifit and nixtract-gifti
+- [ ] Write tests
+  - [ ] find best time, memory, n_subs_per_job
+  - [ ] test functionality
+- [ ] Set up package entry points
+- [ ] Set up command line usage
+- [ ] Write documentation
+- [ ] Update Pypi
+
 # For compute canada:
 
 ## 1. Load python
