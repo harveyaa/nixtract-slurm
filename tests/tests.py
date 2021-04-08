@@ -34,8 +34,8 @@ class TestInternal:
         assert len(config['regressor_files']) == 0
         
     def test_check_glob(self):
-        ls = ns.check_glob('../*/*.py')
-        assert ls == ['../nslurm/__init__.py','../nslurm/nslurm.py','../tests/__init__.py','../tests/tests.py']
+        ls = ns.check_glob('./*.py')
+        assert ls == ['./__init__.py','./tests.py']
 
     def test_replace_file_ext(self):
         ts = ['a_timeseries.tsv','/path/to/b_timeseries.tsv','../path/to/c_timeseries.tsv']
