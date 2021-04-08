@@ -36,7 +36,7 @@ class TestInternal:
     def test_check_glob(self,tmpdir):
         open(tmpdir / "a.py","x")
         open(tmpdir / "b.py","x")
-        ls = ns.check_glob(tmpdir / '*.py')
+        ls = ns.check_glob(str(os.path.join(tmpdir,'*.py')))
         assert len(ls) == 2
         assert ls[0].endswith('a.py')
 
