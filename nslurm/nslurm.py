@@ -18,7 +18,7 @@ import os
 import glob
 import json
 import natsort
-import nixtract
+#import nixtract
 import pandas as pd
 from string import Template
 from argparse import ArgumentParser
