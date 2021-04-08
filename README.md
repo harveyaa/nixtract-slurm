@@ -3,11 +3,13 @@ This project is in development, soon ready but not yet. TODO:
 - [ ] Write tests
   - [ ] find best time, memory, n_subs_per_job
   - [ ] test functionality
-- [ ] Set up continuous integration
+- [x] Set up continuous integration
 - [ ] Set up package entry points
 - [ ] Set up command line usage
 - [ ] Write documentation
 - [ ] Update Pypi
+
+[![harveyaa](https://circleci.com/gh/harveyaa/nixtract-slurm.svg?style=svg)](<LINK>)
 
 # For compute canada:
 
