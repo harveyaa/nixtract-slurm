@@ -1,2 +1,3 @@
-nilearn==0.7.1
-pandas==1.2.3
+nilearn
+pandas
+pytest
