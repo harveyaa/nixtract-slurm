@@ -1,4 +1,4 @@
-import nixtract
+#import nixtract
 import nslurm.nslurm as ns
 import json
 import pytest
