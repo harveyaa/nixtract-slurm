@@ -12,7 +12,7 @@ jobs:
       - python/install-deps
       - python/save-cache
       - run:
-          command: pytest ./nixtract-slurm/tests/tests.py
+          command: python -m pytest ./nixtract-slurm/tests/tests.py
           name: Test
 
 workflows:
