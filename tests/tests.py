@@ -1,4 +1,4 @@
-import nixtract
+#import nixtract
 import nslurm.nslurm as ns
 import json
 import pytest
@@ -33,9 +33,12 @@ class TestInternal:
         assert len(config['input_files']) == 2
         assert len(config['regressor_files']) == 0
         
-    def test_check_glob(self):
-        ls = ns.check_glob('../*/*.py')
-        assert ls == ['../nslurm/__init__.py','../nslurm/nslurm.py','../tests/__init__.py','../tests/tests.py']
+    def test_check_glob(self,tmpdir):
+        open(tmpdir / "a.py","x")
+        open(tmpdir / "b.py","x")
+        ls = ns.check_glob(str(os.path.join(tmpdir,'*.py')))
+        assert len(ls) == 2
+        assert ls[0].endswith('a.py')
 
     def test_replace_file_ext(self):
         ts = ['a_timeseries.tsv','/path/to/b_timeseries.tsv','../path/to/c_timeseries.tsv']
