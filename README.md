@@ -4,8 +4,8 @@ This project is in development, soon ready but not yet. TODO:
   - [ ] find best time, memory, n_subs_per_job
   - [ ] test functionality
 - [x] Set up continuous integration
-- [ ] Set up package entry points
-- [ ] Set up command line usage
+- [x] Set up package entry points
+- [x] Set up command line usage
 - [ ] Write documentation
 - [ ] Update Pypi
 
