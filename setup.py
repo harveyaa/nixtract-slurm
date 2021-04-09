@@ -8,10 +8,15 @@ setup(
       author='Annabelle Harvey',
       author_email='annabelle.harvey@umontreal.ca',
       license='MIT',
-      packages=['nixtract-slurm','tests'],
+      packages=['nslurm','tests'],
       classifiers=[
         "Development Status :: 3 - Alpha",
         "Topic :: Scientific/Engineering :: Bio-Informatics",
         "License :: OSI Approved :: MIT License",
     ],
+      entry_points={
+        'console_scripts': [
+            'nixtract-slurm = nslurm.nslurm:main',
+        ],
+      },
 )

@@ -1,16 +1,3 @@
-#   1. Parse command line arguments
-#   2. Read config.json file
-#   3. Compile list of subjects
-#   4. Read completed_subjects.txt
-#   5. Make list of subjects to do
-#   6. Split subjects to do into array jobs
-#   7. Write file subject_to_job.txt mapping subject to array job
-#   8. Create config_x.json file per array job
-#   9. Create .sh file file
-#   10. Submit .sh file to SLURM
-#   11. Clean up config_x.json files
-#           - Do this from within .sh file
-
 # For now just for nixtract-nifti, TODO include -cifti and -gifti 
 # TODO write tests
 
@@ -26,12 +13,12 @@ from argparse import ArgumentParser
 def generate_parser():
     parser = ArgumentParser()
     parser.add_argument("--out_path",dest='out_path',required=True)
+    parser.add_argument("--config_path",dest='config_path',required=True)
     parser.add_argument("--account",dest='account',required=True)
     parser.add_argument("--time",dest='time',required=False)
     parser.add_argument("--mem",dest='mem',required=False)
     parser.add_argument("--n_jobs",dest='n_jobs',required=False)
     parser.add_argument("--rerun_completed",dest='rerun_completed',action='store_true')
-    parser.add_argument("--config_path",dest='config_path')
     return parser
 
 def check_glob(x):
