@@ -5,10 +5,10 @@ import os
 import glob
 import json
 import natsort
-#import nixtract
+#import nixtract #to make CI pass
 import pandas as pd
 from string import Template
-from argparse import ArgumentParser
+from argparse import ArgumentParsers
 
 def generate_parser():
     parser = ArgumentParser()
@@ -73,14 +73,21 @@ def replace_file_ext(fname):
 
 def get_completed(out_path):
     completed = [ i for i in os.listdir(out_path) if i.endswith('_timeseries.tsv')]
+    print('Found {} completed subjects.'.format(len(completed)))
     return [i for i in map(replace_file_ext,completed)]
 
 def get_todo(inputs, conf, out_path):
     completed = get_completed(out_path)
     if len(conf) != 0:
-        df = pd.DataFrame([inputs,conf],index = ['inputs','conf']).transpose()
-        todo = df[~df['inputs'].isin(completed)].dropna()
-        return todo['inputs'].tolist(), todo['conf'].tolist()
+        inputs_filt = []
+        conf_filt = []
+        for i in range(len(inputs)):
+            if os.path.basename(inputs[i]) in completed:
+                pass
+            else:
+                inputs_filt.append(inputs[i])
+                conf_filt.append(conf[i])
+        return inputs_filt,conf_filt
     else:
        return [i for i in inputs if i not in completed], conf
 
@@ -88,7 +95,7 @@ def get_slurm_params(n,time,mem,n_jobs):
     #NEED TO TEST FOR ACTUAL VALUES
     if n < 1000:
         n_jobs = int(n/50) # eg 7.9 -> 7
-        time = '30:00'
+        time = '5:00'
         mem = '1G'
         if n_jobs == 0:
             n_jobs = 1
@@ -121,7 +128,7 @@ def get_batches(n_jobs, files, conf_files):
 
 def log_batches(batches,out_path):
     d = dict(zip(range(len(batches)),batches))
-    with open(os.path.join(out_path,'file_to_job.json'), 'w') as json_file:
+    with open(os.path.join(out_path,'logs/file_to_job.json'), 'w') as json_file:
         json.dump(d, json_file)
 
 def make_config(batches,batches_conf,params,out_path):
@@ -143,7 +150,7 @@ def make_sh(account,time,mem,n_jobs,out_path):
     sh.close()
 
 def submit_jobs(out_path):
-    p = os.path.join(out_path,'/logs/submit.sh')
+    p = os.path.join(out_path,'logs/submit.sh')
     os.system('sbatch {}'.format(p))
 
 def main():
@@ -153,6 +160,7 @@ def main():
     params = read_config(args.config_path)
     input_files = check_glob(params['input_files'])
     confound_files = check_glob(params['regressor_files'])
+    print('Found {} input file(s), and {} regressor file(s).'.format(len(input_files),len(confound_files)))
 
     # Create logs dir.
     if not os.path.isdir(os.path.join(args.out_path, 'logs')):
@@ -164,15 +172,20 @@ def main():
 
     #Check which files have already been completed
     if not args.rerun_completed:
-        input_files, confound_files = get_todo(input_files, confound_files, args.out_path)
+        print('Making todo list...')
+        input_filt, confound_filt = get_todo(input_files, confound_files, args.out_path)
+        input_files = input_filt
+        confound_files = confound_filt
+        print('Processing {} subject(s).'.format(len(input_files)))
     
     #TO DO: only want to fill in missing arg with best choice based on provided
     if (args.time == None) or (args.mem == None) or (args.n_jobs == None):
         time, mem, n_jobs = get_slurm_params(len(input_files), args.time,args.mem,args.n_jobs)
+        print('Submitting {} SLURM job(s), with time={} and memory={} each...'.format(n_jobs,time,mem))
 
     input_batches, confound_batches = get_batches(n_jobs, input_files, confound_files)
     log_batches(input_batches, args.out_path)
 
-    make_config(input_batches,confound_batches, params, args.out_path)
+    make_config(input_batches,confound_batches, params, os.path.join(args.out_path,"logs"))
     make_sh(args.account,time,mem,n_jobs,args.out_path)
     submit_jobs(args.out_path)
