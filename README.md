@@ -2,7 +2,7 @@ This project is in development, soon ready but not yet. TODO:
 - [ ] Incorporate nixtract-cifit and nixtract-gifti
 - [ ] Write tests
   - [ ] find best time, memory, n_subs_per_job
-  - [ ] test functionality
+  - [x] test functionality
 - [x] Set up continuous integration
 - [x] Set up package entry points
 - [x] Set up command line usage
