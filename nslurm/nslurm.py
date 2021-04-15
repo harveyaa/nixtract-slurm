@@ -92,21 +92,25 @@ def get_todo(inputs, conf, out_path):
        return [i for i in inputs if i not in completed], conf
 
 def get_slurm_params(n,time,mem,n_jobs):
-    #NEED TO TEST FOR ACTUAL VALUES
+    #TIME ~5s per subject (ADHD200 and fmri dev dataset)
+    #MEM 1G overall (cleans up after each subject, takes about peak around ~500)
+    #Test w/ MIST64 and MIST444
+
+    #Change this so that each value is a function of the others
     if n < 1000:
         n_jobs = int(n/50) # eg 7.9 -> 7
-        time = '5:00'
+        time = '30:00'
         mem = '1G'
         if n_jobs == 0:
             n_jobs = 1
     elif n < 10000:
-        n_jobs = int(n/100) # eg 7.9 -> 7
+        n_jobs = int(n/100)
+        time = '45:00'
+        mem = '1G'
+    else:
+        n_jobs = int(n/500)
         time = '1:00:00'
         mem = '2G'
-    else:
-        n_jobs = int(n/500) # eg 7.9 -> 7
-        time = '2:00:00'
-        mem = '3G'
     return time,mem,n_jobs
 
 def split_list(n,ls):
