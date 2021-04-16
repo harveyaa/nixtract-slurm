@@ -1,4 +1,3 @@
-#import nixtract #commented to make CI pass
 import nslurm.nslurm as ns
 import json
 import pytest
@@ -7,7 +6,7 @@ import tempfile
 import subprocess
 import time
 import csv
-from nilearn import datasets
+# from nilearn import datasets
 
 
 class TestInternal:
@@ -167,10 +166,15 @@ class TestInternal:
         configs = [i for i in os.listdir(tmpdir) if i.endswith('.json')]
         assert len(configs) == 2
 
-    #def test_make_sh(self,tmpdir):
-    #    os.mkdir(tmpdir / "logs")
-    #    ns.make_sh('ACCOUNT','TIME','MEM',10,tmpdir)
-    #    assert os.path.exists(tmpdir / 'logs/submit.sh')
+    def test_make_sh(self,tmpdir):
+        os.mkdir(tmpdir / "logs")
+        ns.make_sh('ACCOUNT','TIME','MEM',10,tmpdir)
+        assert os.path.exists(tmpdir / 'logs/submit.sh')
+        with open(tmpdir / 'logs/submit.sh', 'r') as f:
+            lines = f.readlines()
+        assert lines[2] == "#SBATCH --time=TIME\n"
+        assert lines[-2] == "nixtract-nifti -c {}/logs/config_${{SLURM_ARRAY_TASK_ID}}.json {}\n".format(tmpdir,tmpdir)
+        assert len(lines) == 9
 
 #@pytest.fixture(scope="session")
 #def fmridata(tmpdir_factory):

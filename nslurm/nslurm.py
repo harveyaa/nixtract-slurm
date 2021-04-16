@@ -4,7 +4,6 @@ import os
 import glob
 import json
 import natsort
-#import nixtract #commented to make CI pass
 import time
 import datetime
 import pandas as pd
@@ -13,12 +12,12 @@ from argparse import ArgumentParser
 
 def generate_parser():
     parser = ArgumentParser()
-    parser.add_argument("--out_path",help='Path to output directory.',dest='out_path',required=True)
-    parser.add_argument("--config_path",help='Path to config file for nixtract.',dest='config_path',required=True)
-    parser.add_argument("--account",help='Account name for SLURM.',dest='account',required=True)
-    parser.add_argument("--time",help='Specify time (per job) for SLURM. Must be formatted "hours:minutes:seconds".',dest='time',required=False)
-    parser.add_argument("--mem",help='Specify memory (per job) for SLURM.',dest='mem',required=False)
-    parser.add_argument("--n_jobs",help='Specify number of jobs for SLURM.',dest='n_jobs',required=False)
+    parser.add_argument("--out_path",help='Required: Path to output directory.',dest='out_path',required=True)
+    parser.add_argument("--config_path",help='Required: Path to config file for nixtract.',dest='config_path',required=True)
+    parser.add_argument("--account",help='Required: Account name for SLURM.',dest='account',required=True)
+    parser.add_argument("--time",help='Optional: Specify time (per job) for SLURM. Must be formatted "hours:minutes:seconds".',dest='time',required=False)
+    parser.add_argument("--mem",help='Optional: Specify memory (per job) for SLURM.',dest='mem',required=False)
+    parser.add_argument("--n_jobs",help='Optional: Specify number of jobs for SLURM.',dest='n_jobs',required=False)
     parser.add_argument("--rerun_completed",help='Flag to ignore completed output in out_path and process all input.',dest='rerun_completed',action='store_true')
     return parser
 
@@ -286,10 +285,18 @@ def make_sh(account,runtime,mem,n_jobs,out_path):
     out_path : str
         Path to output dir.
     """
+    src = Template("#!/bin/bash\n"
+                    "#SBATCH --job-name=nixtract-slurm\n"
+                    "#SBATCH --time=$time\n"
+                    "#SBATCH --mem=$mem\n"
+                    "#SBATCH --account=$account\n"
+                    "#SBATCH --array=0-$n_jobs\n"
+                    "#SBATCH -o $out_path/logs/slurm_output/batch_%a.out\n"
+                    "$command -c $out_path/logs/config_$${SLURM_ARRAY_TASK_ID}.json $out_path\n"
+                    "rm $out_path/logs/config_*.json")
+
     d = {'account':account,'time': runtime,'mem': mem,'n_jobs': (n_jobs-1),'out_path':out_path,'command':'nixtract-nifti'}
-    with open('../templates/submit_template.sh', 'r') as f:
-        src = Template(f.read())
-        result = src.substitute(d)
+    result = src.substitute(d)
     sh = open(os.path.join(out_path,"logs/submit.sh"), "w")
     sh.write(result)
     sh.close()
@@ -304,10 +311,18 @@ def submit_jobs(out_path):
     p = os.path.join(out_path,'logs/submit.sh')
     os.system('sbatch {}'.format(p))
 
+def test_import():
+    try:
+        import nixtract
+    except:
+        raise ImportError("nixtract must be installed to use nixtract-slurm. See documentation for installation instructions.")
+
 def main():
     """Entry point to nixtract-slurm."""
     parser = generate_parser()
     args = parser.parse_args()
+
+    test_import()
 
     params = read_config(args.config_path)
     input_files = check_glob(params['input_files'])

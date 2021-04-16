@@ -1,4 +1,3 @@
 natsort
 nilearn
 pandas
-pytest
