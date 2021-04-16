@@ -7,7 +7,7 @@ This project is a wrapper for [`nixtract`](https://github.com/danjgale/nixtract)
 `nixtract` (NeuroImaging eXTRACTion) is a collection of simple command-line tools that provide a decently unified interface to extract and process timeseries data from NIFTI, GIFTI, and CIFTI neuroimaging files.
 
 ### Warning:
-  - Currently only NIFTI files are supported by `nixtract-slurm`
+  - Currently only NIFTI files are supported by `nixtract-slurm`, see this [issue](https://github.com/harveyaa/nixtract-slurm/issues/3).
   - Currently probabilistic atlases are not supported by `nixtract`, see this [issue](https://github.com/danjgale/nixtract/issues/15).
   - In order to use `load_confounds` input data must have been preprocessed with [fMRIprep](https://fmriprep.org/en/stable/). See `nixtract` [documentation](https://github.com/danjgale/nixtract) for the `--regressors` flag, under the section 'NIFTIs'.
 
