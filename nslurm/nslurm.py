@@ -135,7 +135,7 @@ def get_todo(inputs, conf, out_path):
                 conf_filt.append(conf[i])
         return inputs_filt,conf_filt
     else:
-       return [i for i in inputs if i not in completed], conf
+       return [i for i in inputs if os.path.basename(i) not in completed], conf
 
 def get_slurm_params(n,runtime=None,mem=None,n_jobs=None):
     """Get remaining parameters to submit SLURM jobs based on specified parameters and number of files to process.
