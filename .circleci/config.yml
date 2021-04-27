@@ -17,6 +17,7 @@ jobs:
   test:
     executor: python/default
     steps:
+      - checkout
       - run:
           command: python -m pytest tests/tests.py::TestInternal
           name: Test
@@ -26,3 +27,5 @@ workflows:
     jobs:
       - build
       - test
+          requires:
+                - build
