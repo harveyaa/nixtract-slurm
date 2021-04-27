@@ -323,6 +323,15 @@ def main():
     args = parser.parse_args()
 
     test_import()
+    
+    # Check for valid out dir
+    print(args.out_path)
+    if not os.path.exists(args.out_path):
+        raise ValueError("Provided out_path does not exist.")
+    
+    # Check for valid config path
+    if not os.path.exists(args.config_path):
+        raise ValueError("Provided config_path does not exist.")
 
     params = read_config(args.config_path)
     input_files = check_glob(params['input_files'])
@@ -330,7 +339,9 @@ def main():
     print('Found {} input file(s), and {} regressor file(s).'.format(len(input_files),len(confound_files)))
 
     # Create logs dir.
+    print('Looking for logs...')
     if not os.path.isdir(os.path.join(args.out_path, 'logs')):
+        print('No logs found, creating logs directory...')
         os.makedirs(os.path.join(args.out_path, 'logs'))
 
     # Create slurm output dir.
