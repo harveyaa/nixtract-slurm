@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='nixtract-slurm',
-      version='0.1.3',
+      version='0.1.4',
       description='A wrapper for nixtract that enables SLURM job submission.',
       url='https://github.com/harveyaa/nixtract-slurm',
       author='Annabelle Harvey',
