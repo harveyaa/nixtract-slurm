@@ -34,10 +34,10 @@ ENV is name of empty directory containing environment.
 #### Upgrade pip:
 `pip install --no-index --upgrade pip`
 
-### 5. Install nixtract-slurm
+### 3. Install nixtract-slurm
 `pip install nixtract-slurm`
 
-### 6. Launch nixtract-slurm
+### 4. Launch nixtract-slurm
 Must have venv activated and be on the login node. To use nixtract-slurm see documentation below.
 
 ## Usage
