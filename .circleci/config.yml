@@ -12,6 +12,7 @@ jobs:
       - python/install-deps
       - python/save-cache
       - run:
+          command: pip install .
           command: python -m pytest tests/tests.py::TestInternal
           name: Test
 
