@@ -15,6 +15,7 @@ jobs:
            command: pip install .
            name: install
   test:
+    executor: python/default
     steps:
       - run:
           command: python -m pytest tests/tests.py::TestInternal
