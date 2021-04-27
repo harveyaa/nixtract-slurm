@@ -34,18 +34,10 @@ ENV is name of empty directory containing environment.
 #### Upgrade pip:
 `pip install --no-index --upgrade pip`
 
-### 3. Install nixtract
-#### Clone directory
-`git clone https://github.com/danjgale/nixtract.git`
-#### Install nixtract
-`cd nixtract`
-
-`pip install .`
-
-### 4. Install nixtract-slurm
+### 5. Install nixtract-slurm
 `pip install nixtract-slurm`
 
-### 5. Launch nixtract-slurm
+### 6. Launch nixtract-slurm
 Must have venv activated and be on the login node. To use nixtract-slurm see documentation below.
 
 ## Usage
