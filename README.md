@@ -36,8 +36,11 @@ ENV is name of empty directory containing environment.
 
 ### 3. Install dependencies
 `pip install pandas`
+
 `pip install natsort`
+
 `pip install nixtract`
+
 `pip install nilearn`
 
 ### 3. Install nixtract-slurm
