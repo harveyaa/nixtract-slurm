@@ -1,4 +1,3 @@
-#import nixtract
 import nslurm.nslurm as ns
 import json
 import pytest
@@ -7,7 +6,8 @@ import tempfile
 import subprocess
 import time
 import csv
-from nilearn import datasets
+from subprocess import PIPE
+# from nilearn import datasets
 
 
 class TestInternal:
@@ -96,22 +96,46 @@ class TestInternal:
         assert len(todo_conf) == 0
 
     def test_get_slurm_params_n10(self):
-        time,mem,n_jobs = ns.get_slurm_params(10,None,None,None)
-        assert time == '30:00'
+        rtime,mem,n_jobs = ns.get_slurm_params(10,runtime=None,mem=None,n_jobs=None)
+        assert rtime == '0:08:20'
         assert mem == '1G'
         assert n_jobs == 1
     
     def test_get_slurm_params_n2000(self):
-        time,mem,n_jobs = ns.get_slurm_params(2000,None,None,None)
-        assert time == '1:00:00'
-        assert mem == '2G'
-        assert n_jobs == 20
+        rtime,mem,n_jobs = ns.get_slurm_params(2000,runtime=None,mem=None,n_jobs=None)
+        assert rtime == '0:33:20'
+        assert mem == '1G'
+        assert n_jobs == 10
     
     def test_get_slurm_params_n20000(self):
-        time,mem,n_jobs = ns.get_slurm_params(20000,None,None,None)
-        assert time == '2:00:00'
-        assert mem == '3G'
+        rtime,mem,n_jobs = ns.get_slurm_params(20000,runtime=None,mem=None,n_jobs=None)
+        assert rtime == '1:23:20'
+        assert mem == '1G'
         assert n_jobs == 40
+    
+    def test_get_slurm_params_n2000_mem_set(self):
+        rtime,mem,n_jobs = ns.get_slurm_params(2000,runtime=None,mem='5G',n_jobs=None)
+        assert rtime == '0:33:20'
+        assert mem == '5G'
+        assert n_jobs == 10
+
+    def test_get_slurm_params_n2000_n_jobs_set(self):
+        rtime,mem,n_jobs = ns.get_slurm_params(2000,runtime=None,mem=None,n_jobs=20)
+        assert rtime == '0:16:40'
+        assert mem == '1G'
+        assert n_jobs == 20
+    
+    def test_get_slurm_params_n2000_time_set(self):
+        rtime,mem,n_jobs = ns.get_slurm_params(2000,runtime='1:00:00',mem=None,n_jobs=None)
+        assert rtime == '1:00:00'
+        assert mem == '1G'
+        assert n_jobs == 5
+    
+    def test_get_slurm_params_n2000_time__n_jobs_set(self):
+        rtime,mem,n_jobs = ns.get_slurm_params(2000,runtime='1:00:00',mem=None,n_jobs=10)
+        assert rtime == '1:00:00'
+        assert mem == '1G'
+        assert n_jobs == 10
 
     def test_split_list_non_empty(self):
         a = [1,2,3,4,5,6,7]
@@ -143,10 +167,30 @@ class TestInternal:
         configs = [i for i in os.listdir(tmpdir) if i.endswith('.json')]
         assert len(configs) == 2
 
-    #def test_make_sh(self,tmpdir):
-    #    os.mkdir(tmpdir / "logs")
-    #    ns.make_sh('ACCOUNT','TIME','MEM',10,tmpdir)
-    #    assert os.path.exists(tmpdir / 'logs/submit.sh')
+    def test_make_sh(self,tmpdir):
+        os.mkdir(tmpdir / "logs")
+        ns.make_sh('ACCOUNT','TIME','MEM',10,tmpdir)
+        assert os.path.exists(tmpdir / 'logs/submit.sh')
+        with open(tmpdir / 'logs/submit.sh', 'r') as f:
+            lines = f.readlines()
+        assert lines[2] == "#SBATCH --time=TIME\n"
+        assert lines[-2] == "nixtract-nifti -c {}/logs/config_${{SLURM_ARRAY_TASK_ID}}.json {}\n".format(tmpdir,tmpdir)
+        assert len(lines) == 9
+    
+    def test_invalid_out_path(self,tmpdir):
+        out = os.path.join(tmpdir,'doesnt_exist')
+        command = 'nixtract-slurm --out_path {} --config_path {}/config_0.json --account rrg-jacquese'.format(out,tmpdir)
+        stderr = subprocess.run(command,stderr=PIPE,shell=True).stderr
+        lines = str(stderr).split('\\n')
+        assert lines[-2] == 'ValueError: Provided out_path does not exist.'
+
+    
+    def test_invalid_config_path(self,tmpdir):
+        config = os.path.join(tmpdir,'doesnt_exist')
+        command = 'nixtract-slurm --out_path {} --config_path {}/config_0.json --account rrg-jacquese'.format(tmpdir,config)
+        stderr = subprocess.run(command,stderr=PIPE,shell=True).stderr
+        lines = str(stderr).split('\\n')
+        assert lines[-2] == 'ValueError: Provided config_path does not exist.'
 
 #@pytest.fixture(scope="session")
 #def fmridata(tmpdir_factory):
@@ -203,6 +247,8 @@ def wait_for_slurm():
             else:
                 time.sleep(10)
 
+#These can only be run on compute canada by me with my set up.
+#TODO figure out why data downloaded to tmpdir_factory can't bee seen by nixtract.
 class TestProgram:
     #def test_data_download(self,fmridata):
     #    input_files = fmridata[0]

@@ -1,8 +1,6 @@
 version: 2.1
-
 orbs:
   python: circleci/python@0.2.1
-
 jobs:
   build-and-test:
     executor: python/default
@@ -11,6 +9,9 @@ jobs:
       - python/load-cache
       - python/install-deps
       - python/save-cache
+      - run:
+          command: pip install .
+          name: Install nixtract-slurm
       - run:
           command: python -m pytest tests/tests.py::TestInternal
           name: Test
