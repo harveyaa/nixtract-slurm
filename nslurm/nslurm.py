@@ -181,6 +181,8 @@ def get_slurm_params(n,runtime=None,mem=None,n_jobs=None):
                 n_per_job = 1
 
         sec = 2*n_per_job*5 #(seconds)
+        if sec < 300:
+            sec = 300
         runtime = str(datetime.timedelta(seconds=sec))
 
     else:
@@ -330,8 +332,6 @@ def main():
 
     test_import()
     
-    # Check for valid out dir
-    print(args.out_path)
     if not os.path.exists(args.out_path):
         raise ValueError("Provided out_path does not exist.")
     

@@ -236,12 +236,18 @@ def get_test_data():
                     data_base + '/sub-pixar123_task-pixar_desc-confounds_regressors.tsv']
     return input_files, conf_files
 
+def check_job_started():
+    time.sleep(1)
+    no_jobs = "b'          JOBID     USER      ACCOUNT           NAME  ST  TIME_LEFT NODES CPUS TRES_PER_N MIN_MEM NODELIST (REASON) \\n'"
+    stdout = subprocess.run(['squeue -u harveyaa'],stdout=PIPE,shell=True).stdout
+    assert str(stdout) != no_jobs
+
 def wait_for_slurm():
-    no_jobs = '          JOBID     USER      ACCOUNT           NAME  ST  TIME_LEFT NODES CPUS TRES_PER_N MIN_MEM NODELIST (REASON) \n'
+    no_jobs = "b'          JOBID     USER      ACCOUNT           NAME  ST  TIME_LEFT NODES CPUS TRES_PER_N MIN_MEM NODELIST (REASON) \\n'"
     while True:
             print('Waiting for SLURM...')
-            stdout = subprocess.run(['squeue','-u','harveyaa'],capture_output=True,text=True).stdout
-            if stdout == no_jobs:
+            stdout = subprocess.run(['squeue -u harveyaa'],stdout=PIPE,shell=True).stdout
+            if str(stdout) == no_jobs:
                 print('SLURM jobs finished')
                 break
             else:
@@ -282,11 +288,7 @@ class TestProgram:
         logs_path = os.path.join(tmpdir,"logs")
         assert os.path.exists(logs_path)
 
-        #check that job started
-        time.sleep(5)
-        no_jobs = '          JOBID     USER      ACCOUNT           NAME  ST  TIME_LEFT NODES CPUS TRES_PER_N MIN_MEM NODELIST (REASON) \n'
-        stdout = subprocess.run(['squeue','-u','harveyaa'],capture_output=True,text=True).stdout
-        assert stdout != no_jobs
+        check_job_started()
 
         wait_for_slurm()
 
@@ -309,11 +311,7 @@ class TestProgram:
         logs_path = os.path.join(tmpdir,"logs")
         assert os.path.exists(logs_path)
 
-        #check that job started
-        time.sleep(5)
-        no_jobs = '          JOBID     USER      ACCOUNT           NAME  ST  TIME_LEFT NODES CPUS TRES_PER_N MIN_MEM NODELIST (REASON) \n'
-        stdout = subprocess.run(['squeue','-u','harveyaa'],capture_output=True,text=True).stdout
-        assert stdout != no_jobs
+        check_job_started()
 
         wait_for_slurm()
 
@@ -340,11 +338,7 @@ class TestProgram:
         logs_path = os.path.join(tmpdir,"logs")
         assert os.path.exists(logs_path)
 
-        #check that job started
-        time.sleep(5)
-        no_jobs = '          JOBID     USER      ACCOUNT           NAME  ST  TIME_LEFT NODES CPUS TRES_PER_N MIN_MEM NODELIST (REASON) \n'
-        stdout = subprocess.run(['squeue','-u','harveyaa'],capture_output=True,text=True).stdout
-        assert stdout != no_jobs
+        check_job_started()
 
         wait_for_slurm()
 
@@ -371,11 +365,7 @@ class TestProgram:
         logs_path = os.path.join(tmpdir,"logs")
         assert os.path.exists(logs_path)
 
-        #check that job started
-        time.sleep(5)
-        no_jobs = '          JOBID     USER      ACCOUNT           NAME  ST  TIME_LEFT NODES CPUS TRES_PER_N MIN_MEM NODELIST (REASON) \n'
-        stdout = subprocess.run(['squeue','-u','harveyaa'],capture_output=True,text=True).stdout
-        assert stdout != no_jobs
+        check_job_started()
 
         wait_for_slurm()
 
