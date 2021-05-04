@@ -6,6 +6,7 @@ import tempfile
 import subprocess
 import time
 import csv
+from subprocess import PIPE
 # from nilearn import datasets
 
 
@@ -178,22 +179,17 @@ class TestInternal:
     
     def test_invalid_out_path(self,tmpdir):
         out = os.path.join(tmpdir,'doesnt_exist')
-        #command = "nixtract-slurm --out_path={} --config_path={}/config_0.json --account=rrg-jacquese"
-        stderr = subprocess.run(['nixtract-slurm',
-                                '--out_path','{}'.format(out),
-                                '--config_path','{}/config_0.json'.format(tmpdir),
-                                '--account','rrg-jacquese'],capture_output=True,text=True).stderr
-        lines = stderr.split('\n')
+        command = 'nixtract-slurm --out_path {} --config_path {}/config_0.json --account rrg-jacquese'.format(out,tmpdir)
+        stderr = subprocess.run(command,stderr=PIPE,shell=True).stderr
+        lines = str(stderr).split('\\n')
         assert lines[-2] == 'ValueError: Provided out_path does not exist.'
 
     
     def test_invalid_config_path(self,tmpdir):
         config = os.path.join(tmpdir,'doesnt_exist')
-        stderr = subprocess.run(['nixtract-slurm',
-                                '--out_path','{}'.format(tmpdir),
-                                '--config_path','{}/config_0.json'.format(config),
-                                '--account','rrg-jacquese'],capture_output=True,text=True).stderr
-        lines = stderr.split('\n')
+        command = 'nixtract-slurm --out_path {} --config_path {}/config_0.json --account rrg-jacquese'.format(tmpdir,config)
+        stderr = subprocess.run(command,stderr=PIPE,shell=True).stderr
+        lines = str(stderr).split('\\n')
         assert lines[-2] == 'ValueError: Provided config_path does not exist.'
 
 #@pytest.fixture(scope="session")

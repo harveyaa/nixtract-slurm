@@ -17,7 +17,7 @@ def generate_parser():
     parser.add_argument("--account",help='Required: Account name for SLURM.',dest='account',required=True)
     parser.add_argument("--time",help='Optional: Specify time (per job) for SLURM. Must be formatted "hours:minutes:seconds".',dest='time',required=False)
     parser.add_argument("--mem",help='Optional: Specify memory (per job) for SLURM.',dest='mem',required=False)
-    parser.add_argument("--n_jobs",help='Optional: Specify number of jobs for SLURM.',dest='n_jobs',required=False)
+    parser.add_argument("--n_jobs",help='Optional: Specify number of jobs for SLURM.',dest='n_jobs',required=False,type=int)
     parser.add_argument("--rerun_completed",help='Flag to ignore completed output in out_path and process all input.',dest='rerun_completed',action='store_true')
     return parser
 
@@ -175,18 +175,24 @@ def get_slurm_params(n,runtime=None,mem=None,n_jobs=None):
                 n_per_job = 500
 
             n_jobs = int(n/n_per_job)
-            if n_jobs == 0:
-                n_jobs = 1
         else:
             n_per_job = int(n/n_jobs) #round down (add one later to calc for time)
+            if n_per_job == 0:
+                n_per_job = 1
 
         sec = 2*n_per_job*5 #(seconds)
         runtime = str(datetime.timedelta(seconds=sec))
 
     else:
-        sec = int(runtime.split(':')[0])*3600 + int(runtime.split(':')[1])*60 + int(runtime.split(':')[2])
+        if len(runtime.split(':')) == 3:
+            sec = int(runtime.split(':')[0])*3600 + int(runtime.split(':')[1])*60 + int(runtime.split(':')[2])
+        elif len(runtime.split(':')) == 2:
+            sec = int(runtime.split(':')[1])*60 + int(runtime.split(':')[2])
         if n_jobs == None:
-            n_jobs = int((10*n)/sec) 
+            n_jobs = int((10*n)/sec)
+
+    if n_jobs == 0:
+                n_jobs = 1
     return runtime,mem,n_jobs
 
 def split_list(n,ls):
@@ -356,10 +362,8 @@ def main():
         confound_files = confound_filt
         print('Processing {} subject(s).'.format(len(input_files)))
     
-    #TO DO: only want to fill in missing arg with best choice based on provided
-    if (args.time == None) or (args.mem == None) or (args.n_jobs == None):
-        runtime, mem, n_jobs = get_slurm_params(len(input_files), args.time,args.mem,args.n_jobs)
-        print('Submitting {} SLURM job(s), with time={} and memory={} each...'.format(n_jobs,runtime,mem))
+    runtime, mem, n_jobs = get_slurm_params(len(input_files), args.time,args.mem,args.n_jobs)
+    print('Submitting {} SLURM job(s), with time={} and memory={} each...'.format(n_jobs,runtime,mem))
 
     input_batches, confound_batches = get_batches(n_jobs, input_files, confound_files)
     log_batches(input_batches, args.out_path)
