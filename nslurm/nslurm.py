@@ -8,7 +8,7 @@ import natsort
 #import nixtract #to make CI pass
 import pandas as pd
 from string import Template
-from argparse import ArgumentParsers
+from argparse import ArgumentParser
 
 def generate_parser():
     parser = ArgumentParser()
